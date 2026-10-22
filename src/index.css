@@ -3,11 +3,10 @@
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @theme {
-  --primary: #ff9671;
+  --primary: #5359bf;
 
-  --font-main: "Zen Maru Gothic", system-ui, Arial, Helvetica, 'Courier New', Courier, monospace;
-  --font-title: ChenYuluoyan, system-ui, Arial, Helvetica, 'Courier New', Courier, monospace;
-  --font-pearl: FakePearl, system-ui, Arial, Helvetica, 'Courier New', Courier, monospace;
+  --font-title: "Zen Maru Gothic", system-ui, Arial, Helvetica, 'Courier New', Courier, monospace;
+  --font-main: FakePearl, system-ui, Arial, Helvetica, 'Courier New', Courier, monospace;
 
   --color-primary: var(--primary);
 }

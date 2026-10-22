@@ -18,7 +18,7 @@ const isHome = computed(() => route.path === '/')
       <SearchBar v-if="!isHome" compact />
     </div>
   </header>
-  <main class="mx-auto max-w-4xl px-4 py-8 font-pearl">
+  <main class="mx-auto max-w-4xl px-4 py-8">
     <router-view />
   </main>
   <footer class="py-8 text-center text-xs text-gray-400">

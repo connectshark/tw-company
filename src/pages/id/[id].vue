@@ -50,10 +50,7 @@
       <dl class="divide-y divide-gray-100">
         <div v-for="[label, value] in group.fields" :key="label" class="grid gap-1 py-2.5 sm:grid-cols-[10rem_1fr] sm:gap-4">
           <dt class="text-sm text-gray-500">{{ label }}</dt>
-          <dd>
-            <router-link v-if="OWNER_KEYS.includes(label) && value" :to="nameLink(value)" class="text-primary hover:underline">{{ value }}</router-link>
-            <FieldValue v-else :value="value" :label="label" />
-          </dd>
+          <dd><FieldValue :value="value" :label="label" /></dd>
         </div>
       </dl>
     </section>
@@ -66,7 +63,7 @@ import { useRoute } from 'vue-router'
 import useFetch from '@/composables/useFetch'
 import FieldValue from '@/components/FieldValue.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
-import { summarize, formatDate } from '@/utils/company'
+import { summarize, formatDate, searchLink } from '@/utils/company'
 
 const route = useRoute()
 const id = computed(() => route.params.id)
@@ -80,11 +77,8 @@ const {
 const data = computed(() => result.value?.data ?? null)
 const info = computed(() => summarize(data.value ?? {}))
 
-const OWNER_KEYS = ['代表人姓名', '負責人姓名']
-const nameLink = (name) => `/name/${encodeURIComponent(name)}`
-
 const highlights = computed(() => [
-  { label: '負責人', value: info.value.owner, to: info.value.owner ? nameLink(info.value.owner) : null },
+  { label: '負責人', value: info.value.owner, to: info.value.owner ? searchLink('name', info.value.owner) : null },
   { label: '資本額（元）', value: info.value.capital },
   { label: '組織類型', value: info.value.org },
   { label: '核准設立', value: info.value.founded ? formatDate(info.value.founded) : '' }

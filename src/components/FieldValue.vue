@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { isDate, formatDate, formatMoney } from '@/utils/company'
+import { isDate, formatDate, formatMoney, linkFor } from '@/utils/company'
 
 const props = defineProps({
   value: { default: null },
@@ -21,6 +21,8 @@ const kind = computed(() => {
   return 'text'
 })
 
+const link = computed(() => linkFor(props.label, props.value))
+
 const isMoney = computed(() => /額|資本/.test(props.label))
 const text = computed(() => (isMoney.value ? formatMoney(props.value) : props.value))
 
@@ -38,7 +40,9 @@ const tableKeys = computed(() =>
 </script>
 
 <template>
-  <span v-if="kind === 'empty'" class="text-gray-400">—</span>
+  <router-link v-if="link" :to="link.to" class="text-primary hover:underline">{{ link.text }}</router-link>
+
+  <span v-else-if="kind === 'empty'" class="text-gray-400">—</span>
 
   <span v-else-if="kind === 'date'" class="tabular-nums">{{ formatDate(value) }}</span>
 
@@ -80,5 +84,5 @@ const tableKeys = computed(() =>
     </div>
   </dl>
 
-  <span v-else class="break-words">{{ text }}</span>
+  <span v-else class="wrap-break-word">{{ text }}</span>
 </template>
