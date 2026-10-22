@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant-TW">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" href="/favicon.ico" />
@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;700&display=swap" rel="stylesheet">
     <title>%VITE_SITE_NAME%</title>
+    <!-- 給不執行 JS 的爬蟲／連結預覽用；App 啟動後由 @unhead/vue 接手（見 main.js） -->
+    <meta data-seo-static name="description" content="%VITE_SITE_DESCRIPTION%">
+    <meta data-seo-static property="og:site_name" content="%VITE_SITE_NAME%">
+    <meta data-seo-static property="og:type" content="website">
+    <meta data-seo-static property="og:title" content="%VITE_SITE_NAME%">
+    <meta data-seo-static property="og:description" content="%VITE_SITE_DESCRIPTION%">
+    <meta data-seo-static property="og:locale" content="zh_TW">
+    <meta data-seo-static name="twitter:card" content="summary">
   </head>
   <body>
     <div id="app" class="bg-primary/5 min-h-svh font-main"></div>

@@ -28,6 +28,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useSeoMeta } from '@unhead/vue'
 import useFetch from '@/composables/useFetch'
 import CompanyCard from '@/components/CompanyCard.vue'
 import Pagination from '@/components/Pagination.vue'
@@ -61,4 +62,10 @@ watch(result, (r) => {
 watch(() => props.keyword, () => { found.value = 0 })
 
 const totalPages = computed(() => Math.ceil(found.value / PAGE_SIZE))
+
+// 搜尋結果頁不收錄，但讓爬蟲順著連結爬到公司詳細頁
+useSeoMeta({
+  title: () => `${config.value.label}「${props.keyword}」搜尋結果${page.value > 1 ? `（第 ${page.value} 頁）` : ''}`,
+  robots: 'noindex, follow'
+})
 </script>

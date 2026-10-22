@@ -60,10 +60,11 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { useHead, useSeoMeta } from '@unhead/vue'
 import useFetch from '@/composables/useFetch'
 import FieldValue from '@/components/FieldValue.vue'
 import StatusBadge from '@/components/StatusBadge.vue'
-import { summarize, formatDate, searchLink } from '@/utils/company'
+import { summarize, formatDate, searchLink, businessItems, toISODate, isEmptyRecord } from '@/utils/company'
 
 const route = useRoute()
 const id = computed(() => route.params.id)
@@ -74,7 +75,7 @@ const {
   error
 } = useFetch(() => `/api/show/${id.value}`)
 
-const data = computed(() => result.value?.data ?? null)
+const data = computed(() => (isEmptyRecord(result.value?.data) ? null : result.value.data))
 const info = computed(() => summarize(data.value ?? {}))
 
 const highlights = computed(() => [
@@ -95,5 +96,62 @@ const groups = computed(() => {
     else basic.push([key, value])
   }
   return [{ title: '登記資料', fields: basic }, ...sections]
+})
+
+// SEO：標題、描述、結構化資料
+const notFound = computed(() => !loading.value && (!data.value || !!error.value))
+
+const pageTitle = computed(() => {
+  if (notFound.value) return `查無統一編號 ${id.value}`
+  if (!data.value) return `統一編號 ${id.value}`
+  return `${info.value.name}（${id.value}）`
+})
+
+const description = computed(() => {
+  if (!data.value) return ''
+  const { name, owner, capital, org, status, founded, address } = info.value
+  const items = businessItems(data.value).slice(0, 3)
+  return [
+    `${name}，統一編號 ${id.value}`,
+    owner && `負責人 ${owner}`,
+    capital && `資本額 ${capital} 元`,
+    org,
+    status,
+    founded && `核准設立於 ${formatDate(founded)}`,
+    address && `地址：${address}`,
+    items.length && `營業項目：${items.join('、')}`
+  ].filter(Boolean).join('，') + '。'
+})
+
+const jsonLd = computed(() => {
+  if (!data.value) return null
+  const { name, founded, address } = info.value
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name,
+    legalName: name,
+    taxID: id.value,
+    url: `${import.meta.env.VITE_SITE_URL}/id/${id.value}`,
+    ...(founded && { foundingDate: toISODate(founded) }),
+    ...(address && {
+      address: { '@type': 'PostalAddress', streetAddress: address, addressCountry: 'TW' }
+    })
+  }
+})
+
+useSeoMeta({
+  title: pageTitle,
+  description: () => description.value || undefined,
+  ogTitle: () => (data.value ? `${pageTitle.value}｜${import.meta.env.VITE_SITE_NAME}` : undefined),
+  ogDescription: () => description.value || undefined,
+  // 查無資料時 SPA 仍回 200，用 noindex 避免被當成軟 404 收錄
+  robots: () => (notFound.value ? 'noindex' : undefined)
+})
+
+useHead({
+  script: () => (jsonLd.value
+    ? [{ type: 'application/ld+json', key: 'company-jsonld', textContent: JSON.stringify(jsonLd.value) }]
+    : [])
 })
 </script>
